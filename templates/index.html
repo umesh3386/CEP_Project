@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Image Recognition</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+</head>
+<body>
+    
+    <div class="container">
+        <h1>Medical Image Recognition</h1>
+        
+        <form id="main-form" method="post" enctype="multipart/form-data">
+            <label for="file">Choose a medical image:</label>
+            <input type="file" name="file" id="file" accept=".jpg, .jpeg, .png" required>
+            <input type="submit" value="Generate Medical Description" class="submit-btn">
+        </form>
+        
+        <button id="open-camera-btn" class="submit-btn alt">
+            Scan with Camera
+        </button>
+        
+        {% if response_text %}
+            <div class="result">
+                <h3>Generated Description:</h3>
+                <div id="result-html"></div>
+                <template id="raw-markdown">
+                    {{ response_text }}
+                </template>
+            </div>
+        {% endif %}
+    </div>
+
+    <div id="camera-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h2>Live Camera Scan</h2>
+            <video id="video-feed" playsinline autoplay muted></video>
+            <canvas id="snapshot-canvas" style="display: none;"></canvas>
+            
+            <button id="scan-btn" class="submit-btn">Take Snapshot</button>
+            <button id="close-camera-btn" class="submit-btn alt">Cancel</button>
+        </div>
+    </div>
+
+
+    <script>
+        // --- Part 1: Handle Markdown formatting (same as before) ---
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const rawMarkdown = document.getElementById('raw-markdown');
+            if (rawMarkdown) {
+                const text = rawMarkdown.innerHTML.trim();
+                const html = marked.parse(text);
+                document.getElementById('result-html').innerHTML = html;
+            }
+        });
+
+        // --- Part 2: New Camera Logic ---
+        const mainForm = document.getElementById('main-form');
+        const fileInput = document.getElementById('file');
+        
+        const modal = document.getElementById('camera-modal');
+        const video = document.getElementById('video-feed');
+        const canvas = document.getElementById('snapshot-canvas');
+        
+        const openCameraBtn = document.getElementById('open-camera-btn');
+        const scanBtn = document.getElementById('scan-btn');
+        const closeCameraBtn = document.getElementById('close-camera-btn');
+
+        let videoStream = null;
+
+        // --- Function to start the camera ---
+        async function startCamera() {
+            try {
+                // Ask for permission and get the video stream
+                videoStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "environment" } // Prioritize rear camera
+                });
+                video.srcObject = videoStream;
+                modal.style.display = 'flex'; // Show the modal
+            } catch (err) {
+                console.error("Error accessing camera: ", err);
+                alert("Could not access camera. Please check permissions.");
+                try {
+                    // Fallback to *any* camera if rear one fails
+                    videoStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = videoStream;
+                    modal.style.display = 'flex';
+                } catch (fallbackErr) {
+                    console.error("Fallback camera error: ", fallbackErr);
+                    alert("Could not access any camera.");
+                }
+            }
+        }
+
+        // --- Function to stop the camera ---
+        function stopCamera() {
+            if (videoStream) {
+                videoStream.getTracks().forEach(track => track.stop());
+                videoStream = null;
+            }
+            modal.style.display = 'none'; // Hide the modal
+        }
+
+        // --- Function to take snapshot and submit form ---
+        function takeSnapshot() {
+            // Set canvas size to match the video feed
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            
+            // Draw the current video frame onto the canvas
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            // Convert the canvas drawing to a "Blob" (a file-like object)
+            canvas.toBlob((blob) => {
+                // This is the clever part:
+                // We create a new File object from the blob
+                const snapshotFile = new File([blob], 'snapshot.jpg', {
+                    type: 'image/jpeg',
+                    lastModified: Date.now()
+                });
+
+                // We use a DataTransfer object to create a FileList
+                const dataTransfer = new DataTransfer();
+                dataTransfer.items.add(snapshotFile);
+                
+                // We assign this new FileList to our original file input
+                fileInput.files = dataTransfer.files;
+
+                // Stop the camera
+                stopCamera();
+                
+                // Programmatically submit the main form
+                mainForm.submit();
+
+            }, 'image/jpeg');
+        }
+
+        // --- Wire up all the buttons ---
+        openCameraBtn.addEventListener('click', startCamera);
+        closeCameraBtn.addEventListener('click', stopCamera);
+        scanBtn.addEventListener('click', takeSnapshot);
+
+    </script>
+
+</body>
+</html>

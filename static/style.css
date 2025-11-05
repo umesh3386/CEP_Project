@@ -1,0 +1,189 @@
+/* Basic setup and font */
+body {
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background-color: #f4f7f6; /* Soft, light grey background */
+    color: #333;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Aligns the box to the top, not screen center */
+    min-height: 100vh;
+}
+
+/* The main container that holds everything */
+.container {
+    width: 100%;
+    max-width: 700px; /* Stops it from getting too wide on big screens */
+    background-color: #ffffff;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    box-sizing: border-box; /* Makes padding behave nicely */
+}
+
+/* --- Header --- */
+h1 {
+    text-align: center;
+    color: #0056b3; /* A professional, trustworthy blue */
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+/* --- Form --- */
+form {
+    display: flex;
+    flex-direction: column; /* Stacks form elements vertically */
+    align-items: center; /* Centers them */
+    gap: 20px; /* Adds space between each form element */
+}
+
+label {
+    font-weight: 500;
+    font-size: 1.1em;
+}
+
+/* --- File Input Styling --- */
+input[type="file"] {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    padding: 20px;
+    width: 100%;
+    box-sizing: border-box; /* Includes padding in the width */
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+input[type="file"]:hover {
+    background-color: #fafdff;
+    border-color: #0056b3;
+}
+
+/* This styles the "Choose File" button inside the input */
+input[type="file"]::file-selector-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: background-color 0.3s ease;
+}
+
+input[type="file"]::file-selector-button:hover {
+    background-color: #0056b3;
+}
+
+
+/* --- Submit Button Styling --- */
+.submit-btn {
+    background-color: #28a745; /* A 'go' green */
+    color: white;
+    font-size: 1.1em;
+    font-weight: 500;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%; /* Makes button full-width */
+}
+
+.submit-btn:hover {
+    background-color: #218838;
+    transform: translateY(-2px); /* Slight 'lift' on hover */
+}
+
+/* --- Result Box Styling --- */
+.result {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa; /* A very light grey box */
+    border-left: 5px solid #007bff; /* Accent border */
+    border-radius: 0 8px 8px 0;
+    color: #212529;
+}
+
+/* This is for the AI's Markdown-generated HTML */
+.result h3 {
+    margin-top: 0;
+    color: #0056b3;
+}
+
+.result p {
+    line-height: 1.6;
+    margin-bottom: 1em;
+}
+
+.result ul {
+    line-height: 1.6;
+    padding-left: 20px;
+}
+
+.result strong {
+    color: #111;
+}
+
+
+/* --- NEW STYLES FOR CAMERA --- */
+
+/* --- Alternate Button Style --- */
+.submit-btn.alt {
+    background-color: #6c757d; /* A neutral grey */
+    margin-top: 10px; /* Space it from the green button */
+}
+
+.submit-btn.alt:hover {
+    background-color: #5a6268;
+}
+
+/* --- Camera Modal (Popup) Styling --- */
+.modal-overlay {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stays in place */
+    z-index: 1000; /* On top of everything */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Black background tint */
+    
+    /* Center the content */
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+    text-align: center;
+}
+
+.modal-content h2 {
+    margin-top: 0;
+    color: #0056b3;
+}
+
+/* --- Live Video Feed Styling --- */
+#video-feed {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    background-color: #eee;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+}
+
+/* Make buttons in modal stack */
+.modal-content .submit-btn {
+    width: 100%;
+    margin-top: 10px;
+}
